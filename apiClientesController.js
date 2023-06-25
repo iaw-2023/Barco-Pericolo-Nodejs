@@ -1,8 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const CryptoJS = require('crypto-js');
 
+app.use(cors());
 app.use(express.json());
 
 const { createClient } = require('@supabase/supabase-js');
