@@ -48,7 +48,7 @@ exports.show = async (req, res) => {
 exports.getCategorias = async ( req, res) => {
   try {
     const categorias = await supabase.from('categoria').select('*');
-    return res.json(categorias);
+    return res.json(categorias.data);
   } catch (error) {
     console.error('Error al obtener las categorías:', error);
     return res.status(500).json({ message: 'Error en el servidor' });

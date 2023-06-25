@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+
 const CryptoJS = require('crypto-js');
 
 app.use(express.json());
@@ -71,8 +72,8 @@ exports.obtenerClientes = async (req, res) => {
 
   exports.loginDeCliente = async (req, res) => {
     try {
-      const { usuario, password } = req.body;
-  
+      const { usuario, password } = req.query;
+
       const { data: cliente, error } = await supabase
         .from('cliente')
         .select('*')
