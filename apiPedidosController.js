@@ -44,13 +44,12 @@ exports.obtenerPedidosCliente = async (req, res) => {
         return res.status(500).json({ message: 'Error en el servidor' });
       }
   
-      const { count: totalPedidos } = await supabase
+      const { data: totalPedidos } = await supabase
         .from('pedido')
-        .select('count(*)')
-        .eq('id_cliente', idCliente)
-        .single();
+        .select('*')
+        .eq('id_cliente', idCliente);
   
-      const totalPaginas = Math.ceil(totalPedidos / perPage);
+      const totalPaginas = Math.ceil(totalPedidos.length / perPage);
   
       const productosPorPedido = [];
   
