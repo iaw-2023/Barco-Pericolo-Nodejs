@@ -163,7 +163,7 @@ exports.obtenerPedidosCliente = async (req, res) => {
         // Obtener el precio del producto desde la tabla "producto"
         const { data: db_producto, error: productoError } = await supabase
           .from('producto')
-          .select('precio')
+          .select('*')
           .eq('id', producto.id_producto)
           .single();
   
@@ -181,6 +181,12 @@ exports.obtenerPedidosCliente = async (req, res) => {
   
         // Crear el detalle de pedido en la tabla "pedido_detalle"
         await supabase.from('pedido_detalle').insert([pedidoDetalle]);
+
+        // Reducir el stock del producto en la tabla "producto"
+        await supabase
+        .from('producto')
+        .update({ stock: (db_producto.stock - producto.cantidad) })
+        .eq('id', producto.id_producto)
       }
   
       return res.json({
