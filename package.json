@@ -1,0 +1,19 @@
+{
+  "name": "nodejsapi",
+  "version": "1.0.0",
+  "description": "REST API para el proyecto de Aplicaciones Web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.18.2",
+    "@supabase/supabase-js": "^2.26.0",
+    "bcrypt": "^5.1.0",
+    "cross-fetch": "^3.1.6",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.1"
+  }
+}
