@@ -13,10 +13,25 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
- * Obtener detalles de una categoría
- * @param {number} idCategoria - ID de la categoría
- * @returns {Object} - Detalles de la categoría
- */
+   * @OA\Get(
+   *     path="/categorias/{idCategoria}",
+   *     summary="Obtener detalles de una categoría",
+   *     tags={"Categorias"},
+   *     @OA\Parameter(
+   *         name="idCategoria",
+   *         in="path",
+   *         description="ID de la categoría",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer"
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Detalles de la categoría"
+   *     )
+   * )
+*/
 exports.show = async (req, res) => {
     try {
       const { idCategoria } = req.params;
@@ -44,9 +59,16 @@ exports.show = async (req, res) => {
   };
 
 /**
- * Obtener todas las categorías
- * @returns {Array} - Lista de categorías
- */
+   * @OA\Get(
+   *     path="/categorias",
+   *     summary="Obtener todas las categorías",
+   *     tags={"Categorias"},
+   *     @OA\Response(
+   *         response=200,
+   *         description="Lista de categorías"
+   *     )
+   * )
+*/
 exports.getCategorias = async ( req, res) => {
   try {
     const categorias = await supabase.from('categoria').select('*');

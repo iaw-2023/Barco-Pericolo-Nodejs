@@ -14,6 +14,114 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+/**
+   * Obtener pedidos de un cliente con paginación.
+   *
+   * @OA\Get(
+   *     path="/pedidos/{idCliente}",
+   *     tags={"Pedidos"},
+   *     summary="Obtiene los pedidos de un cliente con paginación",
+   *     operationId="obtenerPedidosCliente",
+   *     @OA\Parameter(
+   *         name="idCliente",
+   *         in="path",
+   *         description="ID del cliente",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\Parameter(
+   *         name="perPage",
+   *         in="query",
+   *         description="Cantidad de elementos por página",
+   *         required=false,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int32",
+   *             default=10
+   *         )
+   *     ),
+   *     @OA\Parameter(
+   *         name="page",
+   *         in="query",
+   *         description="Número de página",
+   *         required=false,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int32",
+   *             default=1
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="OK",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="productosPorPedido",
+   *                 description="Lista de productos por pedido",
+   *                 type="array",
+   *                 @OA\Items(
+   *                     @OA\Property(
+   *                         property="id_pedido",
+   *                         description="ID del pedido",
+   *                         type="integer",
+   *                         format="int64"
+   *                     ),
+   *                     @OA\Property(
+   *                         property="productos",
+   *                         description="Lista de productos",
+   *                         type="array",
+   *                         @OA\Items(
+   *                             @OA\Property(
+   *                                 property="id",
+   *                                 description="ID del producto",
+   *                                 type="integer",
+   *                                 format="int64"
+   *                             ),
+   *                             @OA\Property(
+   *                                 property="nombre",
+   *                                 description="Nombre del producto",
+   *                                 type="string"
+   *                             ),
+   *                             @OA\Property(
+   *                                 property="precio",
+   *                                 description="Precio del producto",
+   *                                 type="number",
+   *                                 format="float"
+   *                             ),
+   *                             @OA\Property(
+   *                                 property="cantidad",
+   *                                 description="Cantidad del producto",
+   *                                 type="integer",
+   *                                 format="int32"
+   *                             )
+   *                         )
+   *                     )
+   *                 )
+   *             ),
+   *             @OA\Property(
+   *                 property="totalPaginas",
+   *                 description="Número total de páginas",
+   *                 type="integer",
+   *                 format="int32"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Cliente no encontrado",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="message",
+   *                 description="Mensaje de error",
+   *                 type="string"
+   *             )
+   *         )
+   *     )
+   * )
+*/ 
 exports.obtenerPedidosCliente = async (req, res) => {
     try {
       const { idCliente } = req.params;
@@ -112,6 +220,61 @@ exports.obtenerPedidosCliente = async (req, res) => {
     }
 };
 
+/**
+   * @OA\Post(
+   *     path="/pedidos",
+   *     tags={"Pedidos"},
+   *     summary="Crea un nuevo pedido y sus respectivos detalles",
+   *     operationId="crearPedido",
+   *     @OA\RequestBody(
+   *         required=true,
+   *         description="Cuerpo de la solicitud en formato JSON",
+   *         @OA\MediaType(
+   *             mediaType="application/json",
+   *             @OA\Schema(
+   *                 @OA\Property(
+   *                     property="cliente",
+   *                     description="ID del cliente",
+   *                     type="string",
+   *                 ),
+   *                 @OA\Property(
+   *                     property="productos",
+   *                     description="Array de productos",
+   *                     type="array",
+   *                     @OA\Items(
+   *                         @OA\Property(
+   *                             property="id_producto",
+   *                             description="ID del producto",
+   *                             type="string",
+   *                         ),
+   *                         @OA\Property(
+   *                             property="cantidad",
+   *                             description="Cantidad del producto",
+   *                             type="string",
+   *                         ),
+   *                     ),
+   *                 ),
+   *             ),
+   *         ),
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="OK",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="id",
+   *                 description="ID del pedido creado",
+   *                 type="integer",
+   *             ),
+   *             @OA\Property(
+   *                 property="id_cliente",
+   *                 description="ID del cliente del pedido",
+   *                 type="string",
+   *             ),
+   *         ),
+   *     ),
+   * )
+*/
 exports.crearPedido = async (req, res) => {
   try {
     // Obtener los datos enviados en el cuerpo de la solicitud
