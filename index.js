@@ -17,6 +17,11 @@ app.use(express.json());
 |--------------------------------------------------------------------------
 */
 
+app.get('/', function(req, res){
+  res.send('<h1>Backend de Node.js para Barco-Pericolo-React</h1>');
+}
+); 
+
 // Rutas relacionadas a las categorias
 app.get('/apiv2/categorias', apiCategoriasController.getCategorias);
 app.get('/apiv2/categorias/:idCategoria', apiCategoriasController.show);
