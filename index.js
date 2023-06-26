@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-var mercadopago = require('mercadopago');
-mercadopago.configurations.setAccessToken("TEST-6716197673678148-061813-89d329da1afea2ed238b6392c2b1148d-295492865");
 
 const app = express();
 
