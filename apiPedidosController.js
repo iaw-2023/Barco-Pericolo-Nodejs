@@ -39,7 +39,8 @@ exports.obtenerPedidosCliente = async (req, res) => {
         .from('pedido')
         .select('*')
         .eq('id_cliente', idCliente)
-        .range((page - 1) * perPage, page * perPage - 1);
+        .range((page - 1) * perPage, page * perPage - 1)
+        .order('id', { ascending: false });;
   
       if (pedidosError) {
         console.error('Error al obtener los pedidos:', pedidosError);
