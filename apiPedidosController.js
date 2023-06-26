@@ -133,6 +133,7 @@ exports.crearPedido = async (req, res) => {
       const nuevoPedido = {
           id: nuevoId,
           id_cliente: data.cliente,
+          id_pago_mp: data.id_pago,
           created_at: new Date(),
           updated_at: new Date()
         }
