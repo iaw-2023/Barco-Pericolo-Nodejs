@@ -97,6 +97,7 @@ exports.obtenerPedidosCliente = async (req, res) => {
   
         productosPorPedido.push({
           id_pedido: pedido.id,
+          id_pago_mp: pedido.id_pago_mp,
           productos: productos,
         });
       }
