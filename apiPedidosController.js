@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+var mercadopago = require('mercadopago');
+mercadopago.configurations.setAccessToken("TEST-6716197673678148-061813-89d329da1afea2ed238b6392c2b1148d-295492865");
 const app = express();
 
 app.use(cors());
@@ -108,92 +110,127 @@ exports.obtenerPedidosCliente = async (req, res) => {
     }
 };
 
-  exports.crearPedido = async (req, res) => {
-    try {
-      // Obtener los datos enviados en el cuerpo de la solicitud
-      const data = req.body;
-  
-        // Obtener el último ID de la tabla "pedido"
-        const { data: maxIdResult, error: maxIdError } = await supabase
-            .from('pedido')
-            .select('id')
-            .order('id', { ascending: false })
-            .limit(1);
+exports.crearPedido = async (req, res) => {
+  try {
+    // Obtener los datos enviados en el cuerpo de la solicitud
+    const data = req.body;
 
-        if (maxIdError) {
-            console.error('Error al obtener el último ID:', maxIdError);
-            return res.status(500).json({ message: 'Error en el servidor' });
-        }
+      // Obtener el último ID de la tabla "pedido"
+      const { data: maxIdResult, error: maxIdError } = await supabase
+          .from('pedido')
+          .select('id')
+          .order('id', { ascending: false })
+          .limit(1);
 
-        // Calcular el nuevo ID sumando 1 al último ID obtenido
-        const nuevoId = maxIdResult ? (maxIdResult[0].id + 1) : 1;
+      if (maxIdError) {
+          console.error('Error al obtener el último ID:', maxIdError);
+          return res.status(500).json({ message: 'Error en el servidor' });
+      }
 
-        const nuevoPedido = {
-            id: nuevoId,
-            id_cliente: data.cliente,
-            created_at: new Date(),
-            updated_at: new Date()
-          }
+      // Calcular el nuevo ID sumando 1 al último ID obtenido
+      const nuevoId = maxIdResult ? (maxIdResult[0].id + 1) : 1;
 
-      // Crear un nuevo pedido en la tabla "pedido"
-      const { error } = await supabase
-        .from('pedido')
-        .insert([nuevoPedido]);
-
-        if (error) {
-            console.error('Error al insertar el pedido:', error);
-            return res.status(500).json({ message: 'Error en el servidor' });
-        }
-
-      // Actualizar los datos para enviar a "crearPedidoDetalle"
-      data.id_pedido = nuevoPedido.id;
-  
-      // Derivar la creación de los "PedidoDetalle" a su controlador correspondiente
-      for (const producto of data.productos) {
-        const pedidoDetalle = {
-          id_pedido: data.id_pedido,
-          id_producto: producto.id_producto,
-          cantidad: producto.cantidad,
-          precio: null,
+      const nuevoPedido = {
+          id: nuevoId,
+          id_cliente: data.cliente,
           created_at: new Date(),
           updated_at: new Date()
-        };
-  
-        // Obtener el precio del producto desde la tabla "producto"
-        const { data: db_producto, error: productoError } = await supabase
-          .from('producto')
-          .select('*')
-          .eq('id', producto.id_producto)
-          .single();
-  
-        if (productoError) {
-          console.error('Error al obtener el producto:', productoError);
-          throw new Error('Error al obtener el producto');
         }
-  
-        if (!db_producto) {
-          console.error('Producto no encontrado');
-          throw new Error('Producto no encontrado');
-        }
-  
-        pedidoDetalle.precio = db_producto.precio;
-  
-        // Crear el detalle de pedido en la tabla "pedido_detalle"
-        await supabase.from('pedido_detalle').insert([pedidoDetalle]);
 
-        // Reducir el stock del producto en la tabla "producto"
-        await supabase
-        .from('producto')
-        .update({ stock: (db_producto.stock - producto.cantidad) })
-        .eq('id', producto.id_producto)
+    // Crear un nuevo pedido en la tabla "pedido"
+    const { error } = await supabase
+      .from('pedido')
+      .insert([nuevoPedido]);
+
+      if (error) {
+          console.error('Error al insertar el pedido:', error);
+          return res.status(500).json({ message: 'Error en el servidor' });
       }
-  
-      return res.json({
-        id: nuevoPedido.id,
-        id_cliente: nuevoPedido.id_cliente,
-      });
-    } catch (error) {
-      console.error('Error al crear el pedido:', error);
-      return res.status(500).json({ message: 'Error en el servidor' });
+
+    // Actualizar los datos para enviar a "crearPedidoDetalle"
+    data.id_pedido = nuevoPedido.id;
+
+    // Derivar la creación de los "PedidoDetalle" a su controlador correspondiente
+    for (const producto of data.productos) {
+      const pedidoDetalle = {
+        id_pedido: data.id_pedido,
+        id_producto: producto.id_producto,
+        cantidad: producto.cantidad,
+        precio: null,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+
+      // Obtener el precio del producto desde la tabla "producto"
+      const { data: db_producto, error: productoError } = await supabase
+        .from('producto')
+        .select('*')
+        .eq('id', producto.id_producto)
+        .single();
+
+      if (productoError) {
+        console.error('Error al obtener el producto:', productoError);
+        throw new Error('Error al obtener el producto');
+      }
+
+      if (!db_producto) {
+        console.error('Producto no encontrado');
+        throw new Error('Producto no encontrado');
+      }
+
+      pedidoDetalle.precio = db_producto.precio;
+
+      // Crear el detalle de pedido en la tabla "pedido_detalle"
+      await supabase.from('pedido_detalle').insert([pedidoDetalle]);
+
+      // Reducir el stock del producto en la tabla "producto"
+      await supabase
+      .from('producto')
+      .update({ stock: (db_producto.stock - producto.cantidad) })
+      .eq('id', producto.id_producto)
     }
-  };
+
+    return res.json({
+      id: nuevoPedido.id,
+      id_cliente: nuevoPedido.id_cliente,
+    });
+  } catch (error) {
+    console.error('Error al crear el pedido:', error);
+    return res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+
+exports.process_payment = async (req, res) => {
+  const { body } = req;
+  
+  mercadopago.payment.save(body)
+    .then(function(response) {
+      const { response: data } = response;
+
+      res.status(201).json({
+        detail: data.status_detail,
+        status: data.status,
+        id: data.id
+      });
+    })
+    .catch(function(error) {
+      console.log(error);
+      const { errorMessage, errorStatus }  = validateError(error);
+      res.status(errorStatus).json({ error_message: errorMessage });
+    });
+};
+
+function validateError(error) {
+  let errorMessage = 'Unknown error cause';
+  let errorStatus = 400;
+
+  if(error.cause) {
+    const sdkErrorMessage = error.cause[0].description;
+    errorMessage = sdkErrorMessage || errorMessage;
+
+    const sdkErrorStatus = error.status;
+    errorStatus = sdkErrorStatus || errorStatus;
+  }
+
+  return { errorMessage, errorStatus };
+}

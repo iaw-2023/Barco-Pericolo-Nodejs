@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+var mercadopago = require('mercadopago');
+mercadopago.configurations.setAccessToken("TEST-6716197673678148-061813-89d329da1afea2ed238b6392c2b1148d-295492865");
+
 const app = express();
 
 const apiProductosController = require('./apiProductosController');
@@ -27,6 +30,7 @@ app.get('/apiv2/productos/:idCategoria', apiProductosController.getProductosCate
 // Rutas relacionadas a los pedidos
 app.get('/apiv2/pedidos/:idCliente', apiPedidosController.obtenerPedidosCliente);
 app.post('/apiv2/pedidos', apiPedidosController.crearPedido);
+app.post("/apiv2/process_payment", apiPedidosController.process_payment);
 
 // Rutas relacionadas a los clientes
 app.get('/apiv2/clientes', apiClientesController.obtenerClientes);
