@@ -284,11 +284,7 @@ exports.crearPedido = async (req, res) => {
     // Obtener los datos enviados en el cuerpo de la solicitud
     const data = req.body;
 
-    jwt.verify(data.token, secret, function(err, decoded) {
-      if (err) {
-        return res.status(401).json({ message: 'Token expirado' });
-      }
-    });
+    const payload = jwt.verify(data.token, secret);
 
     if(Date.now() > payload.exp){
       return res.status(401).json({ message: 'Token expirado' });
