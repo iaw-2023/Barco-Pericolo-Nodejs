@@ -393,8 +393,23 @@ exports.crearPedido = async (req, res) => {
 
 exports.process_payment = async (req, res) => {
   const { body } = req;
+
+  const { data:tokenDB, errorToken } = await supabase
+      .from('cliente')
+      .select('token')
+      .eq('id', body.cliente)
+      .single();
+
+    if (errorToken) {
+      console.error('Error al obtener el token:', errorToken);
+      return;
+    }
+
+    if(tokenDB.token != body.token){
+      return res.status(401).json({ message: 'Token invalido' });
+    }
   
-  mercadopago.payment.save(body)
+  mercadopago.payment.save(body.cardFormData)
     .then(function(response) {
       const { response: data } = response;
 
