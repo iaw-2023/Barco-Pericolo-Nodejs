@@ -284,10 +284,25 @@ exports.crearPedido = async (req, res) => {
     // Obtener los datos enviados en el cuerpo de la solicitud
     const data = req.body;
 
-    const payload = jwt.verify(data.token, secret);
+    const { data:tokenDB, errorToken } = await supabase
+      .from('cliente')
+      .select('token')
+      .eq('id', data.cliente)
+      .single();
+
+    if (errorToken) {
+      console.error('Error al obtener el token:', errorToken);
+      return;
+    }
+
+    /*const payload = jwt.verify(data.token, secret);
 
     if(Date.now() > payload.exp){
       return res.status(401).json({ message: 'Token expirado' });
+    }*/
+
+    if(tokenDB.token != data.token){
+      return res.status(401).json({ message: 'Token invalido' });
     }
 
       // Obtener el último ID de la tabla "pedido"
