@@ -295,14 +295,14 @@ exports.crearPedido = async (req, res) => {
       return;
     }
 
-    /*const payload = jwt.verify(data.token, secret);
-
-    if(Date.now() > payload.exp){
-      return res.status(401).json({ message: 'Token expirado' });
-    }*/
-
     if(tokenDB.token != data.token){
       return res.status(401).json({ message: 'Token invalido' });
+    }
+
+    const payload = jwt.verify(data.token, secret);
+
+    if(Date.now() > payload.exp){
+      return res.status(402).json({ message: 'Token expirado' });
     }
 
       // Obtener el último ID de la tabla "pedido"
