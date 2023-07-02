@@ -406,7 +406,7 @@ exports.process_payment = async (req, res) => {
     }
 
     if(tokenDB.token != body.token){
-      return res.status(401).json({ message: 'Token invalido' });
+      return res.status(401).json({ error_message: 'Token inválido: Vuelva a iniciar sesión' });
     }
   
   mercadopago.payment.save(body.cardFormData)
