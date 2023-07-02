@@ -174,6 +174,16 @@ exports.loginDeCliente = async (req, res) => {
 
     const token = jwt.sign({ sub: cliente.id, name: cliente.usuario, exp: (Date.now() + 60 * 100000)}, secret);
 
+    const { data, error1 } = await supabase
+      .from('cliente')
+      .update({ token: token })
+      .eq('usuario', usuario);
+
+    if (error1) {
+      console.error('Error al actualizar el valor del token:', error);
+      return;
+    }
+
     res.json({ message: 'Credenciales válidas', clienteId: cliente.id, token: token });
   } catch (error) {
     console.error('Error al realizar el login:', error);
