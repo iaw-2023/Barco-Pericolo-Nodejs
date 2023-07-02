@@ -1,7 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 var mercadopago = require('mercadopago');
+const jwt = require('jsonwebtoken');
+
 mercadopago.configurations.setAccessToken("TEST-6716197673678148-061813-89d329da1afea2ed238b6392c2b1148d-295492865");
+const secret = '8d7e24#Xq?3BCw$9';
+
 const app = express();
 
 app.use(cors());
@@ -279,6 +283,12 @@ exports.crearPedido = async (req, res) => {
   try {
     // Obtener los datos enviados en el cuerpo de la solicitud
     const data = req.body;
+
+    const payload = jwt.verify(data.token, secret);
+
+    if(Date.now() > payload.exp){
+      return res.status(401).json({ message: 'Token expirado' });
+    }
 
       // Obtener el último ID de la tabla "pedido"
       const { data: maxIdResult, error: maxIdError } = await supabase

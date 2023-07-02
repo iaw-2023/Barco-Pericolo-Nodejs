@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+
+const secret = '8d7e24#Xq?3BCw$9';
 const app = express();
 
 const CryptoJS = require('crypto-js');
@@ -169,7 +172,9 @@ exports.loginDeCliente = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
-    res.json({ message: 'Credenciales válidas', clienteId: cliente.id });
+    const token = jwt.sign({ sub: cliente.id, name: cliente.usuario, exp: (Date.now() + 60 * 100000)}, secret);
+
+    res.json({ message: 'Credenciales válidas', clienteId: cliente.id, token: token });
   } catch (error) {
     console.error('Error al realizar el login:', error);
     res.status(500).json({ message: 'Error en el servidor' });
