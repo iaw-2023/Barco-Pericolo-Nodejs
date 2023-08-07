@@ -248,7 +248,39 @@ exports.crearCliente = async (req, res) => {
   try {
     const data = req.body;
 
-    // Crear un nuevo cliente en la tabla "cliente"
+    // Verificar si el usuario ya existe en la tabla "cliente"
+    const { data: existingUsuario, error: existingUsuarioError } = await supabase
+      .from('cliente')
+      .select('*')
+      .eq('usuario', data.usuario);
+
+    if (existingUsuarioError) {
+      console.error('Error al verificar la existencia del usuario:', existingUsuarioError.message);
+      return res.status(500).json({ error: 'Error al verificar la existencia del usuario' });
+    }
+
+    // Verificar si el correo electrónico ya existe en la tabla "cliente"
+    const { data: existingEmail, error: existingEmailError } = await supabase
+      .from('cliente')
+      .select('*')
+      .eq('email', data.email);
+
+    if (existingEmailError) {
+      console.error('Error al verificar la existencia del correo electrónico:', existingEmailError.message);
+      return res.status(500).json({ error: 'Error al verificar la existencia del correo electrónico' });
+    }
+
+    if (existingUsuario.length > 0) {
+      // Si ya existe un cliente con el mismo usuario, devolver un mensaje de error descriptivo
+      return res.status(400).json({ error: 'El usuario ya está registrado' });
+    }
+
+    if (existingEmail.length > 0) {
+      // Si ya existe un cliente con el mismo correo electrónico, devolver un mensaje de error descriptivo
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
+    }
+
+    // Si el usuario y el correo electrónico no existen previamente, crear un nuevo cliente en la tabla "cliente"
     const { data: cliente, error } = await supabase
       .from('cliente')
       .insert([
@@ -267,15 +299,15 @@ exports.crearCliente = async (req, res) => {
     }
 
     const { data: maxIdResult, error: maxIdError } = await supabase
-          .from('cliente')
-          .select('id')
-          .order('id', { ascending: false })
-          .limit(1);
+      .from('cliente')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1);
 
-      if (maxIdError) {
-          console.error('Error al obtener el último ID:', maxIdError);
-          return res.status(500).json({ message: 'Error en el servidor' });
-      }
+    if (maxIdError) {
+      console.error('Error al obtener el último ID:', maxIdError);
+      return res.status(500).json({ message: 'Error en el servidor' });
+    }
 
     return res.status(200).json({ id: maxIdResult[0].id });
   } catch (error) {
